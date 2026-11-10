@@ -4,7 +4,6 @@
   const DALL = S.entries.map((e, i) => [e, i]).filter(([e]) => A.isDated(e)).sort((a, b) => a[0].start - b[0].start || a[1] - b[1]).map(x => x[0]);
   let D = DALL;
   const nodate = () => S.entries.filter(e => e.kind !== 'topic' && e.start == null && A.keep(e));
-  const filterNote = () => A.filtering() ? ' <b>Filter: ' + esc(A.filterLabel()) + ' (' + D.length + ' ud af ' + DALL.length + ').</b>' : '';
   const isBar = e => e.kind === 'period' && (e.end != null || e.precision === 'årti');
   const barEnd = e => e.end === 'nu' ? 2026 : e.end != null ? e.end : e.start + 10;
   const fmtYear = y => y < 0 ? Math.abs(y).toLocaleString('da-DK') + ' f.Kr.' : String(y);
@@ -49,7 +48,7 @@
   }
   function renderE() {
     D = DALL.filter(A.keep);
-    if (!D.length) return A.stripsHTML({era: true}) + `<div class="mode-note">${filterNote()} Ingen indlæg passer.</div>`;
+    if (!D.length) return A.stripsHTML({era: true}) + `<div class="mode-note">Ingen indlæg passer.</div>`;
     const PH = 38, EH = 34, LH = 34;
     let y = 10, lanes = '', items = '';
     ['Historie', 'Partier', 'Kultur'].forEach(lane => {
@@ -89,7 +88,7 @@
     });
     [-12500, 750, 1000, 1250, 1500, 1750, 1900, 1945, 2000].forEach(yr => { h += `<div class="e-tick" style="left:${X(yr)}px"></div>`; heads += `<div class="e-tl" style="left:${X(yr)}px"><span>${fmtYear(yr)}</span></div>`; });
     h += `<div class="e-today" style="left:${X(2026)}px"></div>`; heads += `<div class="e-tl" style="left:${X(2026)}px"><span>i dag</span></div>`;
-    return A.stripsHTML({era: true}) + `<div class="mode-note">Søjler viser tid: jo længere til højre, jo nyere. Tryk på en søjle eller en prik for at læse mere. Rød prik = skøn eller dato uden for materialet.${filterNote()}</div>${stickyHead(heads, W, 66)}<div class="e-scroll" id="scr"><div class="e-chart" style="width:${W}px;height:${H}px">${h}${lanes}${items}</div></div>` + nodateHTML('e-nodate');
+    return A.stripsHTML({era: true}) + `<div class="mode-note">Søjler viser tid: jo længere til højre, jo nyere. Tryk på en søjle eller en prik for at læse mere. Rød prik = skøn eller dato uden for materialet.</div>${stickyHead(heads, W, 66)}<div class="e-scroll" id="scr"><div class="e-chart" style="width:${W}px;height:${H}px">${h}${lanes}${items}</div></div>` + nodateHTML('e-nodate');
   }
   function bindE() {
     if (!document.getElementById('scr')) { A.bindStrips(null); return; }
@@ -111,10 +110,12 @@
   };
 
   /* ================= Linje ================= */
-  const SLOT = 215, PAD = 70;
+  const PAD = 70; let SLOT = 215;
   function renderD() {
     D = DALL.filter(A.keep);
-    if (!D.length) return A.stripsHTML({era: true}) + `<div class="mode-note">${filterNote()} Ingen indlæg passer.</div>`;
+    if (!D.length) return A.stripsHTML({era: true}) + `<div class="mode-note">Ingen indlæg passer.</div>`;
+    const avail = Math.max(document.documentElement.clientWidth, 320);
+    SLOT = Math.max(215, Math.min(420, Math.floor((avail - PAD * 2) / D.length)));
     const W = D.length * SLOT + PAD * 2;
     let ribbon = `<div style="width:${PAD}px;flex:none"></div>`, x0 = PAD, line = `<div style="width:${PAD}px;background:var(--rule)"></div>`;
     A.ERAS.forEach(era => {
@@ -130,7 +131,7 @@
         <button class="d-box"><span class="d-year${yr.length > 10 ? ' long' : ''}">${A.circ(e, esc(yr))}${A.rdot(e)}<span class="bar"></span></span>
         <span class="d-ttl">${esc(e.title)}</span><span class="d-tz">${esc(e.teaser)}</span><span class="d-kind">${A.kindDa(e)}</span></button></div>`;
     });
-    return A.stripsHTML({era: true}) + `${A.filtering() ? `<div class="mode-note">${filterNote()}</div>` : ''}${stickyHead(`<div class="d-ribbon">${ribbon}</div>`, W, 40)}<div class="d-track" id="scr"><div class="d-inner" style="width:${W}px"><div class="d-ribbon"></div><div class="d-line">${line}</div>${items}</div></div>` + nodateHTML('d-none');
+    return A.stripsHTML({era: true}) + `${stickyHead(`<div class="d-ribbon">${ribbon}</div>`, W, 40)}<div class="d-track" id="scr"><div class="d-inner" style="width:${W}px"><div class="d-ribbon"></div><div class="d-line">${line}</div>${items}</div></div>` + nodateHTML('d-none');
   }
   /* fit the card area to the tallest card above and below the line, so there is no empty space */
   function fitD() {

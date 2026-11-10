@@ -70,7 +70,7 @@
   A.views.emner = {
     render() {
       prep();
-      return A.stripsHTML({era: false}) + `<div class="mode-note">Emner er viden uden årstal: tal, regler, hvem der bestemmer hvad. Tryk på et kort for at læse resuméet og se kilden.${A.filtering() ? ' <b>Filter: ' + esc(A.filterLabel()) + ' (' + (topics.length + people.length) + ' kort).</b>' : ''}</div><div class="topic-chips" id="topicChips">${chipsHTML()}</div><div class="cards" id="cards">${cardsHTML()}</div>`;
+      return A.stripsHTML({era: false}) + `<div class="mode-note">Emner er viden uden årstal: tal, regler, hvem der bestemmer hvad. Tryk på et kort for at læse resuméet og se kilden.</div><div class="topic-chips" id="topicChips">${chipsHTML()}</div><div class="cards" id="cards">${cardsHTML()}</div>`;
     },
     bind() {
       A.bindStrips(null);
