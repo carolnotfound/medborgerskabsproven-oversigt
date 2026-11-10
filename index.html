@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medborgerskabsprøven</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Overblik over dansk historie, kultur og samfund til medborgerskabsprøven. Bygget kun på læremateriale til medborgerskabsprøven.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="menu">
+  <span class="brand">Medborgerskabsprøven</span>
+  <nav class="seg" role="tablist" aria-label="Visning">
+    <button role="tab" data-v="linje" aria-selected="true">Linje</button>
+    <button role="tab" data-v="soejler" aria-selected="false">Søjler</button>
+    <button role="tab" data-v="emner" aria-selected="false">Emner</button>
+    <button role="tab" data-v="kort" aria-selected="false">Kort</button>
+  </nav>
+  <button class="mbtn" id="openGuess" aria-pressed="false" title="Alt, hvad der er et skøn eller kommer uden for materialet"><span class="dotred"></span>Skøn <span id="guessCount"></span></button>
+</header>
+<main id="stage"></main>
+<footer class="foot">Ikke officielt materiale. Bygget på <i>Læremateriale til medborgerskabsprøven</i> (Udlændinge- og Integrationsministeriet / SIRI), med egne sammendrag og sidehenvisninger. Tjek altid det officielle materiale. Det, der ikke står i materialet, er markeret med rødt.</footer>
+<aside class="sheet" id="sheet" aria-hidden="true" aria-live="polite">
+  <button class="sheet-close" id="closeSheet" aria-label="Luk">Luk &times;</button>
+  <div id="sheetBody"></div>
+</aside>
+<aside class="drawer" id="drawer" aria-label="Skøn" aria-hidden="true">
+  <button class="close" id="closeDrawer" aria-label="Luk">&times;</button>
+  <h2>Skøn og ting uden for materialet</h2>
+  <p class="intro">Alt andet i appen står i læremateriale til medborgerskabsprøven, med sidehenvisning. Her er det, der er gættet eller hentet andre steder fra. Det er <b>ikke</b> prøvestof.</p>
+  <div id="guessList"></div>
+</aside>
+<script src="data.js"></script>
+<script src="mapdata.js"></script>
+<script src="places.js"></script>
+<script src="app.js"></script>
+<script src="views-time.js"></script>
+<script src="views-emner.js"></script>
+<script src="views-kort.js"></script>
+<script>App.start();</script>
+</body>
+</html>
