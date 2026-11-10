@@ -117,12 +117,14 @@
     const avail = Math.max(document.documentElement.clientWidth, 320);
     SLOT = Math.max(215, Math.min(420, Math.floor((avail - PAD * 2) / D.length)));
     const W = D.length * SLOT + PAD * 2;
-    let ribbon = `<div style="width:${PAD}px;flex:none"></div>`, x0 = PAD, line = `<div style="width:${PAD}px;background:var(--rule)"></div>`;
+    const used = A.ERAS.filter(e => D.some(d => d.era === e.id)), firstEra = used[0], lastEra = used[used.length - 1];
+    let ribbon = `<div style="width:${PAD}px;flex:none;background:${firstEra.bg}"></div>`, x0 = PAD, line = `<div style="width:${PAD}px;background:${firstEra.bg}"></div>`;
     A.ERAS.forEach(era => {
       const c = D.filter(e => e.era === era.id).length; if (!c) return;
       ribbon += `<div class="d-seg" data-x0="${x0}" data-w="${c * SLOT}" style="width:${c * SLOT}px;background:${era.bg};color:${era.fg}"><span>${esc(era.da)}<small>${era.range}</small></span></div>`; x0 += c * SLOT;
       line += `<div style="width:${c * SLOT}px;background:${era.bg}"></div>`;
     });
+    ribbon += `<div style="flex:1 0 ${PAD}px;background:${lastEra.bg}"></div>`; line += `<div style="flex:1 0 ${PAD}px;background:${lastEra.bg}"></div>`;
     let items = '';
     D.forEach((e, i) => {
       const era = A.eraOf(e.era), x = PAD + i * SLOT + SLOT / 2, up = i % 2 === 0;

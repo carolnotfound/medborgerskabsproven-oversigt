@@ -258,3 +258,5 @@ body.sheet-open{padding-bottom:var(--sheetH,0)}
 .d-track{padding:6px 0 6px}
 
 .foot{max-width:60em;margin:0;padding:18px 18px 28px;font-size:13px;line-height:1.5;font-weight:600;opacity:.75}
+
+.d-inner,.e-headin{min-width:100%}
