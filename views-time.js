@@ -4,7 +4,7 @@
   const DALL = S.entries.map((e, i) => [e, i]).filter(([e]) => A.isDated(e)).sort((a, b) => a[0].start - b[0].start || a[1] - b[1]).map(x => x[0]);
   let D = DALL;
   const nodate = () => S.entries.filter(e => e.kind !== 'topic' && e.start == null && A.keep(e));
-  const filterNote = () => A.onlyOften ? ' <b>Filter: kun det, der ofte er spurgt om (' + D.length + ' ud af ' + DALL.length + ').</b>' : '';
+  const filterNote = () => A.filtering() ? ' <b>Filter: ' + esc(A.filterLabel()) + ' (' + D.length + ' ud af ' + DALL.length + ').</b>' : '';
   const isBar = e => e.kind === 'period' && (e.end != null || e.precision === 'årti');
   const barEnd = e => e.end === 'nu' ? 2026 : e.end != null ? e.end : e.start + 10;
   const fmtYear = y => y < 0 ? Math.abs(y).toLocaleString('da-DK') + ' f.Kr.' : String(y);
@@ -49,6 +49,7 @@
   }
   function renderE() {
     D = DALL.filter(A.keep);
+    if (!D.length) return A.stripsHTML({era: true}) + `<div class="mode-note">${filterNote()} Ingen indlæg passer.</div>`;
     const PH = 38, EH = 34, LH = 34;
     let y = 10, lanes = '', items = '';
     ['Historie', 'Partier', 'Kultur'].forEach(lane => {
@@ -91,6 +92,7 @@
     return A.stripsHTML({era: true}) + `<div class="mode-note">Søjler viser tid: jo længere til højre, jo nyere. Tryk på en søjle eller en prik for at læse mere. Rød prik = skøn eller dato uden for materialet.${filterNote()}</div>${stickyHead(heads, W, 66)}<div class="e-scroll" id="scr"><div class="e-chart" style="width:${W}px;height:${H}px">${h}${lanes}${items}</div></div>` + nodateHTML('e-nodate');
   }
   function bindE() {
+    if (!document.getElementById('scr')) { A.bindStrips(null); return; }
     const scr = document.getElementById('scr'); syncHead(scr);
     document.querySelectorAll('.e-chart [data-id]').forEach(b => b.addEventListener('click', () => { if (b.getAttribute('aria-pressed') === 'true') A.closeSheet(); else A.openEntry(b.dataset.id); }));
     bindNodate();
@@ -112,6 +114,7 @@
   const SLOT = 215, PAD = 70;
   function renderD() {
     D = DALL.filter(A.keep);
+    if (!D.length) return A.stripsHTML({era: true}) + `<div class="mode-note">${filterNote()} Ingen indlæg passer.</div>`;
     const W = D.length * SLOT + PAD * 2;
     let ribbon = `<div style="width:${PAD}px;flex:none"></div>`, x0 = PAD, line = `<div style="width:${PAD}px;background:var(--rule)"></div>`;
     A.ERAS.forEach(era => {
@@ -127,7 +130,7 @@
         <button class="d-box"><span class="d-year${yr.length > 10 ? ' long' : ''}">${A.circ(e, esc(yr))}${A.rdot(e)}<span class="bar"></span></span>
         <span class="d-ttl">${esc(e.title)}</span><span class="d-tz">${esc(e.teaser)}</span><span class="d-kind">${A.kindDa(e)}</span></button></div>`;
     });
-    return A.stripsHTML({era: true}) + `<div class="mode-note">Linje viser rækkefølge: alle er lige brede, så afstanden siger ikke noget om tid. Tryk på et kort for at læse mere. Rød prik = skøn eller dato uden for materialet.${filterNote()}</div>${stickyHead(`<div class="d-ribbon">${ribbon}</div>`, W, 40)}<div class="d-track" id="scr"><div class="d-inner" style="width:${W}px"><div class="d-ribbon"></div><div class="d-line">${line}</div>${items}</div></div>` + nodateHTML('d-none');
+    return A.stripsHTML({era: true}) + `${A.filtering() ? `<div class="mode-note">${filterNote()}</div>` : ''}${stickyHead(`<div class="d-ribbon">${ribbon}</div>`, W, 40)}<div class="d-track" id="scr"><div class="d-inner" style="width:${W}px"><div class="d-ribbon"></div><div class="d-line">${line}</div>${items}</div></div>` + nodateHTML('d-none');
   }
   /* fit the card area to the tallest card above and below the line, so there is no empty space */
   function fitD() {
@@ -139,6 +142,7 @@
     inner.style.setProperty('--lt', lt + 'px'); inner.style.height = (lt + 10 + 46 + dn + 14) + 'px';
   }
   function bindD() {
+    if (!document.getElementById('scr')) { A.bindStrips(null); return; }
     fitD(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitD); window.addEventListener('load', fitD);
     const scr = document.getElementById('scr'); syncHead(scr);
     document.querySelectorAll('.d-item .d-box').forEach(b => b.addEventListener('click', () => { const id = b.parentElement.dataset.id; if (A.sel === id) A.closeSheet(); else A.openEntry(id); }));

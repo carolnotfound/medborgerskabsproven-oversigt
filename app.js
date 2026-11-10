@@ -26,7 +26,7 @@
   const rdot = e => redDate(e) ? '<span class="rdot" title="Skøn eller dato uden for materialet: se detaljerne"></span>' : '';
   const circ = (e, txt) => often(e) ? `<span class="circ" title="Ofte spurgt om: ${e.exam.length} spørgsmål i de 13 tidligere prøver"><i>${txt}</i></span>` : txt;
 
-  const App = {S, ERAS, byId, eraOf, esc, isDated, isPerson, laneOf, redDate, often, kindDa, rdot, circ, views: {}, current: null, sel: null, theme: null, onlyOften: false, keep: e => !App.onlyOften || often(e), eraCol: ERACOL};
+  const App = {S, ERAS, byId, eraOf, esc, isDated, isPerson, laneOf, redDate, often, kindDa, rdot, circ, views: {}, current: null, sel: null, theme: null, onlyOften: false, keep: e => (!App.onlyOften || often(e)) && (!App.theme || (e.themes || []).includes(App.theme)), filtering: () => !!(App.onlyOften || App.theme), filterLabel: () => [App.onlyOften ? 'ofte spurgt om' : '', App.theme ? 'tema ' + App.theme : ''].filter(Boolean).join(' + '), eraCol: ERACOL};
   window.App = App;
 
   /* ---------- detail sheet ---------- */
@@ -118,25 +118,21 @@
     h += '<div class="theme-row" id="themeRow"><button class="oftenbtn" data-often aria-pressed="' + App.onlyOften + '" title="Vis kun det, der er spurgt om i mindst to af de 13 tidligere prøver"><span class="oc"></span>Ofte til prøven</button><span class="lab">Tema</span>' + S.themes.map(t => `<button data-theme="${esc(t)}" aria-pressed="${App.theme === t}">${esc(t)}</button>`).join('') + '</div>';
     return h + '</div>';
   };
+  App.refilter = function () {
+    const v = App.views[App.current], keep = (v && v.visibleId && v.visibleId()) || App.sel || null;
+    App.go(App.current, keep && byId[keep] && App.keep(byId[keep]) ? keep : null);
+  };
   App.bindStrips = function (jumpEra) {
     const ob = document.querySelector('[data-often]');
-    if (ob) ob.addEventListener('click', () => {
-      const v = App.views[App.current], keep = (v && v.visibleId && v.visibleId()) || App.sel || null;
-      App.onlyOften = !App.onlyOften; App.go(App.current, keep && byId[keep] && App.keep(byId[keep]) ? keep : null);
-    });
+    if (ob) ob.addEventListener('click', () => { App.onlyOften = !App.onlyOften; App.refilter(); });
     document.querySelectorAll('[data-theme]').forEach(b => b.addEventListener('click', () => {
-      App.theme = App.theme === b.dataset.theme ? null : b.dataset.theme;
-      document.querySelectorAll('[data-theme]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.theme === App.theme)));
-      App.applyTheme();
+      App.theme = App.theme === b.dataset.theme ? null : b.dataset.theme; App.refilter();
     }));
+    const row = document.getElementById('themeRow'), pr = row && row.querySelector('[data-theme][aria-pressed=true]');
+    if (pr) row.scrollLeft = Math.max(0, pr.offsetLeft - 80);
     if (jumpEra) document.querySelectorAll('[data-era]').forEach(b => b.addEventListener('click', () => jumpEra(b.dataset.era)));
   };
-  App.applyTheme = function () {
-    document.querySelectorAll('[data-id]').forEach(el => {
-      const e = byId[el.dataset.id];
-      el.classList.toggle('faded', !!(App.theme && e && !(e.themes || []).includes(App.theme)));
-    });
-  };
+  App.applyTheme = function () { /* theme chips now filter (hide) instead of fading */ };
   App.setEra = function (id) {
     document.querySelectorAll('.era-strip [data-era]').forEach(b => b.setAttribute('aria-current', String(b.dataset.era === id)));
   };
