@@ -79,7 +79,7 @@
 
   /* ---------- navigation ---------- */
   const stage = document.getElementById('stage');
-  const NAMES = {soejler: 'Søjler', linje: 'Linje', emner: 'Emner', kort: 'Kort'};
+  const NAMES = {soejler: 'Søjler', linje: 'Linje', emner: 'Emner', kort: 'Kort', prove: 'Prøve'};
   function updateHash() {
     const h = '#' + App.current + (App.sel ? '/' + App.sel : '');
     try { history.replaceState(null, '', h); } catch (_) { /* ignore */ }
@@ -96,7 +96,7 @@
     document.title = NAMES[name] + ' · Medborgerskabsprøven';
     if (v.bind) v.bind();
     App.applyTheme();
-    if (name === 'kort' || (name === 'emner' && App.sel && byId[App.sel] && byId[App.sel].kind !== 'topic' && !isPerson(byId[App.sel]))) { App.sel = null; setSheet(false); }
+    if (name === 'kort' || name === 'prove' || (name === 'emner' && App.sel && byId[App.sel] && byId[App.sel].kind !== 'topic' && !isPerson(byId[App.sel]))) { App.sel = null; setSheet(false); }
     if (v.focus) v.focus(focus, !!id);
     markSel(); updateHash();
     if (!id) window.scrollTo(0, 0);
